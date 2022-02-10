@@ -38,8 +38,12 @@ def get_geocode(
         return DEFAULT
     try:
         results = json_res['response']['GeoObjectCollection']['featureMember']
+        if not results:
+            return DEFAULT
         toponym = results[result_index]['GeoObject']
-    except (KeyError, IndexError):
+    except (KeyError, IndexError) as exc:
+        if use_traceback:
+            utils.traceback(utils.exc_to_response(exc), req_url)
         toponym = DEFAULT
     return toponym
 

@@ -6,6 +6,7 @@ from typing import Tuple
 
 def exc_to_response(exception: Exception) -> requests.Response:
     response = requests.Response()
+    response.status_code = ''
     response.reason = exception.__class__.__name__
     return response
 
@@ -13,7 +14,7 @@ def exc_to_response(exception: Exception) -> requests.Response:
 def traceback(response: requests.Response, request: str) -> None:
     print(
         f'Ошибка выполнения запроса:\n{request}\n'
-        f'Http статус: {response.status_code} ({response.reason})')
+        f'Cтатус: {response.status_code} ({response.reason})')
     sys.exit(1)
 
 
