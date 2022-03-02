@@ -51,14 +51,39 @@ def get_coords(org: dict) -> Tuple[float]:
     return (lon, lat)
 
 
+def to_org_properties(org: dict) -> dict:
+    ("""Если json словарь имеет тип Feature, то """
+     """он преобразовывается в json словарь типа properties""")
+    if not isinstance(org, dict):
+        return org
+    feature_keys = ['geometry', 'properties', 'type']
+    keys_match = sorted(org.keys()) == feature_keys
+    if keys_match and org[feature_keys[2]] == 'Feature':
+        org = org[feature_keys[1]]
+    return org
+
+
+def is_around_the_clock(org: dict) -> bool:
+    """Проверяет круглосуточность организации"""
+    DEFAULT = None
+    org = to_org_properties(org)
+    try:
+        hours = org['CompanyMetaData']['Hours']
+        avail_times = hours['Availabilities']
+        if not avail_times:
+            return DEFAULT
+        all_hours = avail_times[0]['TwentyFourHours']
+        every_day = avail_times[0]['Everyday']
+    except KeyError:
+        return DEFAULT
+    return all_hours and every_day
+
+
 def get_addr_name_hours(org: dict) -> Tuple[str]:
     ("""Возвращает адрес, название организации """
      """и время её работы.""")
     DEFAULT = (None, None, None)
-    feature_keys = ['geometry', 'properties', 'type']
-    if sorted(org.keys()) == feature_keys and \
-            org[feature_keys[2]] == 'Feature':
-        org = org[feature_keys[1]]
+    org = to_org_properties(org)
     try:
         company_meta = org['CompanyMetaData']
         address = company_meta['address']
