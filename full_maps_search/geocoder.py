@@ -9,6 +9,7 @@ API_KEY = '40d1649f-0493-4b70-98ba-98533de7710b'
 
 def get_geocode(
         geocode_str: str, result_index: int = 0,
+        ll: str = '', kind: str = '',
         use_traceback: bool = True) -> dict:
     """Возвращает топоним по запросу"""
     DEFAULT = None
@@ -20,6 +21,10 @@ def get_geocode(
         'geocode': geocode_str,
         'format': 'json'
     }
+    if ll:
+        params['ll'] = ll
+    if kind:
+        params['kind'] = kind
     try:
         res = requests.get(req_url, params=params)
     except requests.exceptions.RequestException as req_exc:
